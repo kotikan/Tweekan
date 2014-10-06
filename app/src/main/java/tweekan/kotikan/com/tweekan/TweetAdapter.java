@@ -16,8 +16,17 @@ import java.util.List;
  */
 public class TweetAdapter extends BaseAdapter {
 
-    final List<String> tweets = new ArrayList<String>();
+    public static interface Listener {
+        void onTweetChosen(String tweet);
+    }
+
+    private final List<String> tweets = new ArrayList<String>();
     private final LayoutInflater inflater;
+    private Listener listener;
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
 
     public TweetAdapter(Context context) {
         inflater = LayoutInflater.from(context);
@@ -49,9 +58,23 @@ public class TweetAdapter extends BaseAdapter {
                 ? (LinearLayout) convertView
                 : (LinearLayout) inflater.inflate(R.layout.list_cell_tweet_interest, null);
 
+
         TextView textView = (TextView) layout.findViewById(R.id.list_cell_tweet_title);
+        View deleteButton = layout.findViewById(R.id.list_cell_tweet_delete);
+        deleteButton.setOnClickListener(deleteTweetListener(position));
+
         textView.setText(tweets.get(position));
 
         return layout;
+    }
+
+    private View.OnClickListener deleteTweetListener(final int position) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tweets.remove(position);
+                notifyDataSetChanged();
+            }
+        };
     }
 }

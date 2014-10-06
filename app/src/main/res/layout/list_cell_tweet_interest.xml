@@ -23,6 +23,7 @@
         />
 
     <ImageView
+        android:id="@+id/list_cell_tweet_delete"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
