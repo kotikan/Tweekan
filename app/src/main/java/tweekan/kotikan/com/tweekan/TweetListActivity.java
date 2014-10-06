@@ -6,15 +6,22 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.Toast;
 
 
 public class TweetListActivity extends Activity implements TweetAdderDialog.Callback {
 
+    private TweetAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tweet_list);
+
+        ListView listView = (ListView) findViewById(android.R.id.list);
+        adapter = new TweetAdapter(this);
+        listView.setAdapter(adapter);
     }
 
     @Override
@@ -40,6 +47,6 @@ public class TweetListActivity extends Activity implements TweetAdderDialog.Call
 
     @Override
     public void tweetChosenPhrase(String tweet) {
-        Toast.makeText(this, tweet, Toast.LENGTH_SHORT).show();
+        adapter.addNewTweet(tweet);
     }
 }
