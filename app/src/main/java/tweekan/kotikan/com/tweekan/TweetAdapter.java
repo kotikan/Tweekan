@@ -16,17 +16,8 @@ import java.util.List;
  */
 public class TweetAdapter extends BaseAdapter {
 
-    public static interface Listener {
-        void onTweetChosen(String tweet);
-    }
-
     private final List<String> tweets = new ArrayList<String>();
     private final LayoutInflater inflater;
-    private Listener listener;
-
-    public void setListener(Listener listener) {
-        this.listener = listener;
-    }
 
     public TweetAdapter(Context context) {
         inflater = LayoutInflater.from(context);

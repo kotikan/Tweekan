@@ -3,9 +3,12 @@ package tweekan.kotikan.com.tweekan;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -22,6 +25,17 @@ public class TweetListActivity extends Activity implements TweetAdderDialog.Call
         ListView listView = (ListView) findViewById(android.R.id.list);
         adapter = new TweetAdapter(this);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> list, View v, int pos, long id) {
+                launchDetailActivityForTweet((String) adapter.getItem(pos));
+            }
+        });
+    }
+
+    private void launchDetailActivityForTweet(String tweet) {
+        Intent intent = new Intent(this, TweetDetailActivity.class);
+        intent.putExtra(TweetDetailActivity.EXTRA_TWEET_NAME, tweet);
+        startActivity(intent);
     }
 
     @Override
