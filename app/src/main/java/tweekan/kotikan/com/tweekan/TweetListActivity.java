@@ -1,12 +1,15 @@
 package tweekan.kotikan.com.tweekan;
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 
-public class TweetListActivity extends Activity {
+public class TweetListActivity extends Activity implements TweetAdderDialog.Callback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,9 +26,20 @@ public class TweetListActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.menu_action_add_tweet_interest) {
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            TweetAdderDialog fragment = new TweetAdderDialog();
+            fragment.setListener(this);
+            fragmentTransaction.add(fragment, TweetAdderDialog.NAME);
+            fragmentTransaction.commit();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void tweetChosenPhrase(String tweet) {
+        Toast.makeText(this, tweet, Toast.LENGTH_SHORT).show();
     }
 }
