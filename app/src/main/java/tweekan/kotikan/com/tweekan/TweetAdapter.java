@@ -8,23 +8,43 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.activeandroid.Model;
+import com.activeandroid.query.Select;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import tweekan.kotikan.com.tweekan.models.Tweet;
 
 /**
  * Created by roberthewitt on 06/10/2014.
  */
 public class TweetAdapter extends BaseAdapter {
 
-    private final List<String> tweets = new ArrayList<String>();
+    private final List<Tweet> tweets = new ArrayList<Tweet>();
     private final LayoutInflater inflater;
+
+    private Tweet saveTweetToDisc(String toSave) {
+        Tweet tweet = new Tweet();
+        tweet.name = toSave;
+        tweet.save();
+        return tweet;
+    }
+
+
+    private void deleteTweetFromDisc(Tweet tweet) {
+        tweet.delete();
+    }
 
     public TweetAdapter(Context context) {
         inflater = LayoutInflater.from(context);
+        tweets.addAll(Tweet.getAll());
     }
 
     public void addNewTweet(String tweet) {
-        tweets.add(tweet);
+        Tweet tweetToDisc = saveTweetToDisc(tweet);
+        tweets.add(tweetToDisc);
+
         notifyDataSetChanged();
     }
 
@@ -54,7 +74,7 @@ public class TweetAdapter extends BaseAdapter {
         View deleteButton = layout.findViewById(R.id.list_cell_tweet_delete);
         deleteButton.setOnClickListener(deleteTweetListener(position));
 
-        textView.setText(tweets.get(position));
+        textView.setText(tweets.get(position).name);
 
         return layout;
     }
@@ -63,7 +83,8 @@ public class TweetAdapter extends BaseAdapter {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tweets.remove(position);
+                deleteTweetFromDisc(tweets.remove(position));
+
                 notifyDataSetChanged();
             }
         };

@@ -12,6 +12,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import tweekan.kotikan.com.tweekan.models.Tweet;
+
 
 public class TweetListActivity extends Activity implements TweetAdderDialog.Callback {
 
@@ -27,7 +29,7 @@ public class TweetListActivity extends Activity implements TweetAdderDialog.Call
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> list, View v, int pos, long id) {
-                launchDetailActivityForTweet((String) adapter.getItem(pos));
+                launchDetailActivityForTweet(((Tweet)adapter.getItem(pos)).name);
             }
         });
     }

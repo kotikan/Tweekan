@@ -8,7 +8,9 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        android:name=".TweetApplication"
+        >
         <activity
             android:name=".TweetListActivity"
             android:label="@string/app_name" >
@@ -19,6 +21,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".TweetDetailActivity"/>
+
+
+        <meta-data android:name="AA_DB_NAME" android:value="tweets.db" />
+        <meta-data android:name="AA_DB_VERSION" android:value="1" />
+
+
     </application>
 
 </manifest>
