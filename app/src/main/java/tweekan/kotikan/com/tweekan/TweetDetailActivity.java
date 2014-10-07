@@ -11,6 +11,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import tweekan.kotikan.com.tweekan.twitter.Twitter;
+
 
 public class TweetDetailActivity extends Activity {
 
@@ -23,5 +25,12 @@ public class TweetDetailActivity extends Activity {
         Bundle extras = getIntent().getExtras();
         String title = extras.getString(EXTRA_TWEET_NAME);
         setTitle("Showing tweets for " + title);
+
+        Twitter.request().tweetsForQuery("foo", new Twitter.Callback() {
+            @Override
+            public void onRequestComplete(Twitter.Result result) {
+
+            }
+        });
     }
 }
