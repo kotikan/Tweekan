@@ -32,9 +32,6 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.activeandroid.Model;
-import com.activeandroid.query.Select;
-
 import java.util.ArrayList;
 import java.util.List;
 
