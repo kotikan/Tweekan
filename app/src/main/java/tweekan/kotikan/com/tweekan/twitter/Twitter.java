@@ -7,11 +7,15 @@ import java.util.List;
  */
 public class Twitter {
 
-    static final String consumerKey    = "generateAndFillIn";
-    static final String consumerSecret = "generateAndFillIn";
+    // generate using https://apps.twitter.com/
+    static final String consumerKey       = "fillIn";
+    static final String consumerSecret    = "fillIn";
+    static final String accessToken       = "fillIn";
+    static final String accessTokenSecret = "fillIn";
 
+    private static BasicTwitterClient basicTwitterClient = new BasicTwitterClient();
     public static Request request() {
-        return new BasicTwitterClient();
+        return basicTwitterClient;
     }
 
     public static interface Request {
@@ -25,7 +29,6 @@ public class Twitter {
     public static interface Result {
         ServerResponse response();
         List<String> tweets();
-        String originalQuery();
     }
 
     public static enum ServerResponse {

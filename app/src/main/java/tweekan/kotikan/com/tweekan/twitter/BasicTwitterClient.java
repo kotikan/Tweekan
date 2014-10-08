@@ -1,75 +1,77 @@
 package tweekan.kotikan.com.tweekan.twitter;
 
-import android.net.http.AndroidHttpClient;
-import android.util.Base64;
-import android.util.Log;
+import android.os.AsyncTask;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.util.EntityUtils;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import twitter4j.Query;
+import twitter4j.QueryResult;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * Created by roberthewitt on 07/10/2014.
  */
 public class BasicTwitterClient implements Twitter.Request {
 
-    private final ExecutorService executor = Executors.newFixedThreadPool(1);
-    private final HttpClient client;
+    private final twitter4j.Twitter instance;
 
     public BasicTwitterClient() {
-        final String consumerKey    = Twitter.consumerKey;
-        final String consumerSecret = Twitter.consumerSecret;
-        final String bearerToken = String.format("%s:%s", consumerKey, consumerSecret);
-        String base64EncodedString = Base64.encodeToString(bearerToken.getBytes(), Base64.DEFAULT);
-        client = AndroidHttpClient.newInstance("AndroidTweetAppTest");
-        executor.submit(tokenRequest(base64EncodedString));
+        ConfigurationBuilder cb = new ConfigurationBuilder();
+        cb
+                .setDebugEnabled(true)
+                .setOAuthConsumerKey(Twitter.consumerKey)
+                .setOAuthConsumerSecret(Twitter.consumerSecret)
+                .setOAuthAccessToken(Twitter.accessToken)
+                .setOAuthAccessTokenSecret(Twitter.accessTokenSecret);
+        TwitterFactory twitterFactory = new TwitterFactory(cb.build());
+        instance = twitterFactory.getInstance();
     }
 
     @Override
-    public void tweetsForQuery(String query, Twitter.Callback callback) {
+    public void tweetsForQuery(final String query, final Twitter.Callback callback) {
+        new AsyncTask<String, Void, QueryResult>() {
 
-    }
-
-    private Runnable tokenRequest(final String base64EncodedString) {
-        return new Runnable() {
             @Override
-            public void run() {
-                int webRequestResult = 0;
-                String content = "";
-
+            protected QueryResult doInBackground(String... params) {
+                QueryResult result = null;
                 try {
-                    HttpPost httpRequest = new HttpPost("https://twitter.com/oauth/request_token");
-                    httpRequest.setEntity(new StringEntity("grant_type=client_credentials"));
-                    httpRequest.setHeader("Authorization", "Basic " + base64EncodedString);
-                    httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-                    httpRequest.setHeader("Accept-Encoding", "gzip");
-                    HttpResponse response = client.execute(httpRequest);
-
-                    StatusLine statusLine = response.getStatusLine();
-                    if (statusLine != null) {
-                        webRequestResult = statusLine.getStatusCode();
-                    }
-                    content = EntityUtils.toString(response.getEntity());
-                } catch (Exception e) {
+                    result = instance.search().search(new Query(params[0]));
+                } catch (TwitterException e) {
                     e.printStackTrace();
                 }
-
-                Log.d("webRequest", "");
-                Log.d("webRequest", "statusCode = " + webRequestResult);
-                Log.d("webRequest", "content    = " + content);
-                Log.d("webRequest", "");
+                return result;
             }
-        };
+
+            @Override
+            protected void onPostExecute(QueryResult queryResult) {
+                final Twitter.ServerResponse response = queryResult != null ? Twitter.ServerResponse.SUCCESS : Twitter.ServerResponse.FAILURE;
+                final ArrayList<String> results = new ArrayList<String>();
+                if (queryResult != null) {
+                    for (twitter4j.Status tweet : queryResult.getTweets()) {
+                        String name = tweet.getUser().getName();
+                        String tweetText = tweet.getText();
+                        results.add(String.format(
+                                  "user : %s" +
+                                "\nmsg  : %s", name, tweetText));
+                    }
+                }
+
+                callback.onRequestComplete(new Twitter.Result() {
+                    @Override
+                    public Twitter.ServerResponse response() {
+                        return response;
+                    }
+
+                    @Override
+                    public List<String> tweets() {
+                        return results;
+                    }
+                });
+            }
+        }.execute(query);
     }
+
 }
