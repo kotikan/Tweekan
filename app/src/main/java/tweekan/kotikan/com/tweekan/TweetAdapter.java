@@ -37,9 +37,8 @@ import java.util.List;
 
 import tweekan.kotikan.com.tweekan.models.Tweet;
 
-public class TweetAdapter extends BaseAdapter {
+public class TweetAdapter extends GenericAdapter<Tweet> {
 
-    private final List<Tweet> tweets = new ArrayList<Tweet>();
     private final LayoutInflater inflater;
 
     private Tweet saveTweetToDisc(String toSave) {
@@ -49,36 +48,20 @@ public class TweetAdapter extends BaseAdapter {
         return tweet;
     }
 
-
     private void deleteTweetFromDisc(Tweet tweet) {
         tweet.delete();
     }
 
     public TweetAdapter(Context context) {
         inflater = LayoutInflater.from(context);
-        tweets.addAll(Tweet.getAll());
+        data.addAll(Tweet.getAll());
     }
 
     public void addNewTweet(String tweet) {
         Tweet tweetToDisc = saveTweetToDisc(tweet);
-        tweets.add(tweetToDisc);
+        data.add(tweetToDisc);
 
         notifyDataSetChanged();
-    }
-
-    @Override
-    public int getCount() {
-        return tweets.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return tweets.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
     }
 
     @Override
@@ -92,7 +75,7 @@ public class TweetAdapter extends BaseAdapter {
         View deleteButton = layout.findViewById(R.id.list_cell_tweet_delete);
         deleteButton.setOnClickListener(deleteTweetListener(position));
 
-        textView.setText(tweets.get(position).name);
+        textView.setText(getItemGeneric(position).name);
 
         return layout;
     }
@@ -101,7 +84,7 @@ public class TweetAdapter extends BaseAdapter {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteTweetFromDisc(tweets.remove(position));
+                deleteTweetFromDisc(data.remove(position));
 
                 notifyDataSetChanged();
             }
